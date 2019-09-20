@@ -29,6 +29,7 @@ EXTRA_CFLAGS += -DDEBUG -DTFA9874_NONDSP_STEREO
 
 EXTRA_CFLAGS += -I$(src)/inc
 EXTRA_CFLAGS += -Werror
+EXTRA_CFLAGS += -Wno-enum-conversion
 
 snd-soc-tfa9874-objs += tfa98xx.o
 snd-soc-tfa9874-objs += tfa_container.o
