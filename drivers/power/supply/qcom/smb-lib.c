@@ -1498,7 +1498,7 @@ int smblib_vconn_regulator_is_enabled(struct regulator_dev *rdev)
 #define MAX_RETRY		15
 #define MIN_DELAY_US		2000
 #define MAX_DELAY_US		9000
-static int otg_current[] = {250000, 500000, 1000000, 1500000};
+static int otg_current[] = {250000, 500000, 1000000, 1500000, 2500000};
 static int smblib_enable_otg_wa(struct smb_charger *chg)
 {
 	u8 stat;
@@ -2727,15 +2727,15 @@ int smblib_get_prop_die_health(struct smb_charger *chg,
 	return 0;
 }
 
-#define SDP_CURRENT_UA			500000
-#define CDP_CURRENT_UA			1500000
+#define SDP_CURRENT_UA			2500000
+#define CDP_CURRENT_UA			2500000
 /* Huaqin add for ZQL1650-1287 factory version remove before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/5/8 start */
 #ifdef CONFIG_MACH_X01BD
 /* Huaqin add for ZQL1650-71 before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/4/4 start */
-#define DCP_CURRENT_UA			2000000
+#define DCP_CURRENT_UA			2500000
 /* Huaqin add for ZQL1650-71 before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/4/4 end */
 #else
-#define DCP_CURRENT_UA			500000
+#define DCP_CURRENT_UA			3500000
 #endif
 /* Huaqin add for ZQL1650-1287 factory version remove before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/5/8 end */
 #define HVDCP_CURRENT_UA		3000000
@@ -3854,7 +3854,7 @@ void jeita_rule(void)
 	case JEITA_STATE_LESS_THAN_0:
 		charging_enable = EN_BAT_CHG_EN_COMMAND_FALSE;
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_850MA;
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
 		printk("%s: temperature < 0\n", __func__);
 		break;
 	case JEITA_STATE_RANGE_0_to_100:
@@ -3864,7 +3864,7 @@ void jeita_rule(void)
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;                   //reg=1070
 		/* Huaqin modify for ZQL1820-711 Set FCC as 925mA while battery temperature between 0 degree and 10 degree by gaochao at 2018/09/20 start */
 		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1400MA;                //reg=1061
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_925MA;		//FCC < 1000mA  10% accuracy
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;		//FCC < 1000mA  10% accuracy
 		/* Huaqin modify for ZQL1820-711 Set FCC as 925mA while battery temperature between 0 degree and 10 degree by gaochao at 2018/09/20 end */
 		printk("%s: 0 <= temperature < 10\n", __func__);
 		rc = SW_recharge(smbchg_dev);
@@ -3878,7 +3878,7 @@ void jeita_rule(void)
 		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
 		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1475MA;
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;                   //reg=1070
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA;             //reg=1061
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;             //reg=1061
 		printk("%s: 10 <= temperature < 20\n", __func__);
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0) {
@@ -4166,7 +4166,7 @@ void asus_chg_flow_work(struct work_struct *work)
 /* Huaqin add for ZQL1650-71 before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/4/4 end */
 #endif
 /* Huaqin add for ZQL1650-1287 factory version remove before BC1.2 500mA before adapter id 1000mA by fangaijun at 2018/5/8 end */
-			set_icl = ICL_500mA;
+			set_icl = ICL_3000mA;
 		rc = smblib_masked_write(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG,
 			USBIN_CURRENT_LIMIT_MASK, set_icl);
 		if (rc < 0)
@@ -4178,7 +4178,7 @@ void asus_chg_flow_work(struct work_struct *work)
 	case CDP_CHARGER_BIT:
 		printk("asus_chg_flow_work enter CDP_CHARGER_BIT\n");
 /* Huaqin modify for ZQL1650 modify CDP charging current by fangaijun at 2018/04/18 start*/
-			set_icl = ICL_1500mA;
+			set_icl = ICL_3000mA;
 /* Huaqin modify for ZQL1650 modify CDP charging current by fangaijun at 2018/04/18 end*/
 		rc = smblib_masked_write(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG,     //reg=1370   bit7-bit0=USBIN_CURRENT_LIMIT
 			USBIN_CURRENT_LIMIT_MASK, set_icl);
@@ -4200,7 +4200,7 @@ void asus_chg_flow_work(struct work_struct *work)
 		break;
 	case OCP_CHARGER_BIT:
 		printk("asus_chg_flow_work entert OCP_CHARGER_BIT");
-			set_icl = ICL_2000mA;                                                                                                                                 //reg=1370 bit7-bit0
+			set_icl = ICL_3000mA;                                                                                                                                 //reg=1370 bit7-bit0
 		rc = smblib_masked_write(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG,
 			USBIN_CURRENT_LIMIT_MASK, set_icl);
 		if (rc < 0)
@@ -4235,7 +4235,7 @@ void asus_chg_flow_work(struct work_struct *work)
 			printk("%s: Couldn't read fast_CURRENT_LIMIT_CFG_REG\n", __func__);
 		printk("asus_chg_flow_work dcp_USBIN_1_cc=0x%x\n",USBIN_1_cc);
 
-		set_icl = ICL_1000mA;                                                                                                                                 //reg=1370 bit7-bit0
+		set_icl = ICL_3000mA;                                                                                                                                 //reg=1370 bit7-bit0
 		rc = smblib_masked_write(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG,
 			USBIN_CURRENT_LIMIT_MASK, set_icl);
 		if (rc < 0)
@@ -4370,19 +4370,19 @@ void asus_adapter_adc_work(struct work_struct *work)
 	//determine current-setting value for DCP type AC:
 	switch (ASUS_ADAPTER_ID) {
 	case ASUS_750K:
-			usb_max_current = ICL_2000mA;
+			usb_max_current = ICL_3000mA;
 		break;
 	case ASUS_200K:
-			usb_max_current = ICL_2000mA;
+			usb_max_current = ICL_3000mA;
 		break;
 	case PB:
-			usb_max_current = ICL_2000mA;
+			usb_max_current = ICL_3000mA;
 		break;
 	case OTHERS:
-			usb_max_current = ICL_2000mA;
+			usb_max_current = ICL_3000mA;
 		break;
 	case ADC_NOT_READY:
-		usb_max_current = ICL_1000mA;
+		usb_max_current = ICL_2000mA;
 		break;
 	}
 	rc = smblib_set_usb_suspend(smbchg_dev, 0);
@@ -5100,11 +5100,11 @@ static void smblib_force_legacy_icl(struct smb_charger *chg, int pst)
 		 */
 		if (!is_client_vote_enabled(chg->usb_icl_votable,
 								USB_PSY_VOTER))
-			vote(chg->usb_icl_votable, USB_PSY_VOTER, true, 100000);
+			vote(chg->usb_icl_votable, USB_PSY_VOTER, true, 300000);
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, false, 0);
 		break;
 	case POWER_SUPPLY_TYPE_USB_CDP:
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 1500000);
+		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 300000);
 		break;
 	case POWER_SUPPLY_TYPE_USB_DCP:
 		typec_mode = smblib_get_prop_typec_mode(chg);
