@@ -22,6 +22,12 @@
 #include <linux/qpnp/qpnp-revid.h>
 #include "fg-core.h"
 #include "fg-reg.h"
+#include <linux/proc_fs.h>
+#include <linux/mm.h>
+#include <linux/syscalls.h>
+#include <linux/reboot.h>
+#include <linux/rtc.h>
+#include <linux/switch.h>
 
 #define FG_GEN3_DEV_NAME	"qcom,fg-gen3"
 
@@ -5504,7 +5510,7 @@ static void fg_gen3_shutdown(struct platform_device *pdev)
 {
 	struct fg_chip *chip = dev_get_drvdata(&pdev->dev);
 	int rc, bsoc;
-
+	
 	if (chip->charge_full) {
 		rc = fg_get_sram_prop(chip, FG_SRAM_BATT_SOC, &bsoc);
 		if (rc < 0) {

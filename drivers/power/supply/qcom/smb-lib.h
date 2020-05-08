@@ -310,6 +310,12 @@ struct smb_charger {
 	struct work_struct	legacy_detection_work;
 	struct delayed_work	uusb_otg_work;
 	struct delayed_work	bb_removal_work;
+	struct delayed_work	asus_chg_flow_work;
+	struct delayed_work	asus_adapter_adc_work;
+	struct delayed_work	asus_min_monitor_work;
+	struct delayed_work asus_batt_RTC_work;
+	struct qpnp_vadc_chip			*gpio12_vadc_dev;
+
 
 	/* cached status */
 	int			voltage_min_uv;
@@ -369,6 +375,11 @@ struct smb_charger {
 	int			pulse_cnt;
 };
 
+struct gpio_control {
+	u32 ADC_SW_EN;
+	u32 ADCPWREN_PMI_GP1;
+};
+
 int smblib_read(struct smb_charger *chg, u16 addr, u8 *val);
 int smblib_masked_write(struct smb_charger *chg, u16 addr, u8 mask, u8 val);
 int smblib_write(struct smb_charger *chg, u16 addr, u8 val);
@@ -418,6 +429,12 @@ irqreturn_t smblib_handle_wdog_bark(int irq, void *data);
 
 int smblib_get_prop_input_suspend(struct smb_charger *chg,
 				union power_supply_propval *val);
+int smblib_get_prop_charging_enabled(struct smb_charger *chg,
+				union power_supply_propval *val);
+int smblib_get_prop_adapter_id(struct smb_charger *chg,
+				union power_supply_propval *val);
+int smblib_set_prop_charging_enabled(struct smb_charger *chg,
+				const union power_supply_propval *val);
 int smblib_get_prop_batt_present(struct smb_charger *chg,
 				union power_supply_propval *val);
 int smblib_get_prop_batt_capacity(struct smb_charger *chg,
