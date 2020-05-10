@@ -472,7 +472,7 @@ static int ff_ctl_init_driver(void)
 
         /* Register IRQ. */
         err = request_threaded_irq(g_context->irq_num, ff_ctl_device_irq,NULL,
-                IRQF_TRIGGER_RISING, "ff_irq", (void*)g_context);
+                IRQF_TRIGGER_RISING | IRQF_PERF_CRITICAL, "ff_irq", (void*)g_context);
         if (err) {
             FF_LOGE("request_irq(..) = %d.", err);
             break;
